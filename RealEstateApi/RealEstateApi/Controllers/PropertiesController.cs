@@ -37,10 +37,7 @@ namespace RealEstateApi.Controllers
 
             if (user == null) return NotFound();
 
-            var propertyResult = _dbContext.Properties
-                .FirstOrDefault(p => p.Id == id
-                && p.Bookmarks.FirstOrDefault().PropertyId == id
-                && p.Bookmarks.FirstOrDefault().User_Id == user.Id);
+            var propertyResult = _dbContext.Properties.Find(id);
 
             if (propertyResult !=null)
             {
@@ -55,27 +52,14 @@ namespace RealEstateApi.Controllers
                      p.Price,
                      p.ImageUrl,
                      p.User.Phone,
-                     p.Bookmarks
+                     Bookmark = p.Bookmarks.FirstOrDefault(u => u.User_Id==user.Id)
                  }).FirstOrDefault();
                 return Ok(result);
-
             }
             else
             {
-                var result = _dbContext.Properties.Where(p => p.Id == id).Select(p => new
-                {
-                    p.Id,
-                    p.Name,
-                    p.Detail,
-                    p.Address,
-                    p.Price,
-                    p.ImageUrl,
-                    p.User.Phone,
-                }).FirstOrDefault();
-                return Ok(result);
-
+                return NotFound();
             }
-
         }
 
         [HttpGet("TrendingProperties")]
